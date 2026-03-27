@@ -2,8 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { Upload, FileText, Loader2, FileUp, Sparkles, AlertCircle, CheckCircle2, Copy, Download, Key } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { analyzeClinicalPaper } from './lib/gemini';
-import { cn } from './lib/utils';
+import { analyzeClinicalPaper } from './gemini';
+import { cn } from './utils';
 import { motion, AnimatePresence } from 'motion/react';
 
 // Add type definition for window.aistudio
