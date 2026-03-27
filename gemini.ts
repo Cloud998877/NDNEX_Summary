@@ -66,31 +66,29 @@ const SYSTEM_INSTRUCTION = `
     *   **연구자 관점**: (해당 시 기재)
 `;
 
-export async function analyzeClinicalPaper(text: string, fileData?: { data: string, mimeType: string }) {
-  // Vercel 배포 시에는 import.meta.env.VITE_GEMINI_API_KEY를 사용하고,
-  // 로컬/AI Studio 환경에서는 런타임에 주입되는 process.env.API_KEY 또는 process.env.GEMINI_API_KEY를 사용
-  let apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
-  
-  if (!apiKey && typeof process !== 'undefined' && process.env) {
-    apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY || '';
+export async function analyzeClinicalPaper(
+  text: string,
+  fileData?: { data: string; mimeType: string }
+) {
+  const response = await fetch('/api/analyze', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      text,
+      fileData: fileData ?? null,
+    }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data?.error || '분석 요청에 실패했습니다.');
   }
 
-  if (!apiKey) {
-    throw new Error('API key is missing. Please provide a valid API key.');
-  }
-
-  const ai = new GoogleGenAI({ apiKey });
-
-  const parts: any[] = [{ text }];
-  
-  if (fileData) {
-    parts.push({
-      inlineData: {
-        data: fileData.data,
-        mimeType: fileData.mimeType,
-      }
-    });
-  }
+  return data;
+}
 
   const contents: any[] = [
     { role: 'user', parts }
